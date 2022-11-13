@@ -6,11 +6,15 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using UTB.Eshop.Application.Services.Abstraction;
+using UTB.Eshop.Application.Services.Implementation;
+using UTB.Eshop.Infrastructure.Database;
 
 namespace UTB.Eshop.WebAPI
 {
@@ -26,6 +30,9 @@ namespace UTB.Eshop.WebAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDbContext<EshopDbContext>(optionsBuilder => optionsBuilder.UseMySql(Configuration.GetConnectionString("MySqlWebAPI"), new MySqlServerVersion("8.0.26")));
+
+            services.AddScoped<IProductApplicationService, ProductApplicationService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -52,6 +59,7 @@ namespace UTB.Eshop.WebAPI
 
             app.UseEndpoints(endpoints =>
             {
+                //jednotlive "routes" jsou v tomto pripade v controlleru a v akcnich metodach (jedna se o dalsi moznost, jak namapovat routovani)
                 endpoints.MapControllers();
             });
         }
